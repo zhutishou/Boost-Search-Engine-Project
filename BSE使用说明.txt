@@ -1,0 +1,14 @@
+一.介绍
+  首先，相比于百度、搜狗之类的全网搜索，我们这个项目只是针对于boost库的搜索项目，相对简单且代码量不多
+
+二.技术栈
+  C++(c++11、STL)、Boost、Jsoncpp、cppjieba，cpp-httplib , html5，css，js、jQuery、Ajax等内容
+
+三.环境
+  我们在linux-ubuntu环境下
+
+四.项目实现过程
+  首先我们要安装好对应的boost库
+  centos:sudo yum -y install boost-devel
+  unbuntu:sudo apt-get install libboost-all-dev
+  其次，我们使用的boost文档放在项目中了（boost_1_88_0）
