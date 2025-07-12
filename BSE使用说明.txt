@@ -11,4 +11,13 @@
   首先我们要安装好对应的boost库
   centos:sudo yum -y install boost-devel
   unbuntu:sudo apt-get install libboost-all-dev
-  其次，我们使用的boost文档放在项目中了（boost_1_88_0）
+  其次，我们在项目中使用的boost文档是（boost_1_88_0）下载路径：https://www.boost.org/releases/latest/
+  将其拷贝到linux形成：/data/input中
+具体步骤：
+1.编写parser.cc文件
+  该文件作用是将boost库中.html类型文件获取得到其title+content+url形式拷贝到/data/raw_html/raw_txt文件中
+  具体步骤可以参考注释（非常详细）
+  该部分难点在于boost库使用和文件操作，但是只要有一定的基础就可以完成
+
+2.
+
