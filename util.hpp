@@ -1,5 +1,8 @@
+#pragma once
+
 #include <iostream>
 #include <string>
+#include <vector>
 #include <fstream>
 
 
@@ -31,5 +34,21 @@ namespace ns_util
             return true;
         }
 
+    };
+
+
+    //用于切分字符串
+    class StringUtil
+    {
+    public:
+        static void CutString(const std::string& line,std::vector<std::string>* out,const std::string7 sep)
+        {
+            //利用boos库中split函数---boost::split(type, select_list, boost::is_any_of(","), boost::token_compress_on);
+            //type---std::vector<std::string>，用于存放切割之后的字符串
+            //select_list---select_list：传入的字符串，可以为空
+            //boost::is_any_of("")---设定切割符为
+            //boost::token_compress_on/off---将连续多个分隔符当一个，默认没有打开，当用的时候一般是要打开的
+            std::boost::split(*out,line,boost::is_any_of("sep"),boost::token_compress_on);            
+        }
     };
 }
