@@ -19,5 +19,14 @@
   具体步骤可以参考注释（非常详细）
   该部分难点在于boost库使用和文件操作，但是只要有一定的基础就可以完成
 
-2.
+2.编写索引index
+  对于该项目我们获取的title、content需要建立正排和倒排索引，方便我们查找和显示
+  正排索引是指通过ID（doc_id）来查找内容（string）
+  倒排索引更为复杂，将一个句子分成多个词，根据词来找到id
+  可见倒排索引一个句子可以分成多个词，即可以找到多个id的
+  该部分是index.hpp文件负责
+  难点：如何实现对一个content、title分词，这里我们使用Jieba分词工具。链接如下：
+https://gitee.com/imboy-tripartite-deps/cppjieba
+https://github.com/yanyiwu/cppjieba
+  
 
