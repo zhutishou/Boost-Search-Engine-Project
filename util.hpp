@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include "inc/cppjieba/Jieba.hpp"
+#include <boost/algorithm/string.hpp>
 
 
 //该文件用于存放文件处理功能
@@ -42,14 +43,15 @@ namespace ns_util
     class StringUtil
     {
     public:
-        static void CutString(const std::string& line,std::vector<std::string>* out,const std::string sep)
+        static void CutString(const std::string& line,std::vector<std::string>* out,const std::string& sep)
         {
             //利用boos库中split函数---boost::split(type, select_list, boost::is_any_of(","), boost::token_compress_on);
             //type---std::vector<std::string>，用于存放切割之后的字符串
             //select_list---select_list：传入的字符串，可以为空
             //boost::is_any_of("")---设定切割符为
             //boost::token_compress_on/off---将连续多个分隔符当一个，默认没有打开，当用的时候一般是要打开的
-            std::boost::split(*out,line,boost::is_any_of("sep"),boost::token_compress_on);            
+            //boost::split(*out,line,boost::is_any_of(sep),boost::token_compress_on); 
+            boost::split(*out, line, boost::is_any_of(sep), boost::token_compress_on);
         }
     };
 
@@ -70,7 +72,11 @@ namespace ns_util
     private:
         static cppjieba::Jieba jieba;
     };
-    cppjieba::Jieba jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,DF_PATH,STOP_WORD_PATH);//静态成员变量在类外定义，属于所有类对象
+    cppjieba::Jieba jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,IDF_PATH,STOP_WORD_PATH);//静态成员变量在类外定义，属于所有类对象
+
+
+
+
 
 
 
