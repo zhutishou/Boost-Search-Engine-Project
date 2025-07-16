@@ -4,13 +4,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <ifstream>
+#include <fstream>
 #include <unordered_map>
+#include <mutex>
 #include "util.hpp"
 
 
 //该文件用于处理索引相关内容
-namespace cx_index
+namespace ns_index
 {
     //正排索引处理：
     struct DocInfo
@@ -28,18 +29,42 @@ namespace cx_index
         std::string word;//文档内容
         int weight;//文档权重
     };
-
+    //Index写成单例模式
+typedef std::vector<InvertedELem> InvertedList; 
     class Index
     {
-    public:
+    private:
+        //单例特点1：构造函数和析构函数私有化
         Index()
         {
         }
         ~Index()
         {
         }
+        static Index* instance;
+        static std::mutex  _mutex;
+    public:
+        //单例特点2：禁用拷贝构造函数和赋值运算符重载
+        Index(const Index&)=delete;
+        Index& operator=(const Index&)=delete;
+        //单例特点3：生成一个静态成员函数和一个静态成员变量供外界访问
+        static Index* GetInstance()
+        {
+            //利用双检测法：--懒汉模式
+            if(instance==nullptr)
+            {
+                _mutex.lock();
+                if(instance==nullptr)
+                {
+                    instance=new Index;
+                }
+                _mutex.unlock();
+            }
+            return instance;
+            //该方法也不是一定安全的，CPU指令如果顺序存在问题，new可能导致先返回在创建空间，导致返回nullptr
+        }
 
-        //正排:根据doc_id查找文档内容
+        //正排:根据doc_id查找排结构体
         DocInfo* GetForwardIndex(uint64_t doc_id)
         {
             if(doc_id>forward_index.size())
@@ -63,13 +88,13 @@ namespace cx_index
         }
 
         //构建索引
-        bool BuildIndex(const string& input)//input即/data/raw_html/raw.txt文件
+        bool BuildIndex(const std::string& input)//input即/data/raw_html/raw.txt文件
         {   
             std::ifstream in(input,std::ios::in|std::ios::binary);
             //检查是否打开
             if(!in.is_open())
             {
-                std::cerr<<"file: "<<output<<" open failed"<<std::endl;
+                std::cerr<<"file: "<<input<<" open failed"<<std::endl;
                 return false;
             }
             //根据title+content+url \n 按行读取内容---getline
@@ -167,8 +192,8 @@ namespace cx_index
                 item.doc_id=doc.doc_id;//DocInfo
                 item.word=word_pair.first;
                 item.weight=word_pair.second.title_cnt*X+word_pair.second.content_cnt*Y;
-                InvertedList& Inverted_list=inverted_index[word_pair.first];
-                Inverted_list.push_back(std::move(item));
+                InvertedList& Inverted_list=inverted_index[word_pair.first];//词为word_pair.first的倒排链表
+                Inverted_list.push_back(std::move(item));//对该链表尾部插入
             }
             return true;
         }
@@ -176,8 +201,9 @@ namespace cx_index
 
         //当是正排时，利用vector下标就是ID的方便特性，所以数据结构用vector数组
         std::vector<DocInfo> forward_index;
-        //当时倒排时，通过关键字找对应的ID等信息(可能存在一对多的关系),此时利用unordered_map来解决(hash),注意second可能存在多个，要利用vector存放
-typedef std::vector<InvertedELem> InvertedList;      
+        //当时倒排时，通过关键字找对应的ID等信息(可能存在一对多的关系),此时利用unordered_map来解决(hash),注意second可能存在多个，要利用vector存放     
         std::unordered_map<std::string,InvertedList> inverted_index;//first--存放词,second存放一条链表，表中是词为first的不同权重/doc_id的节点
     };
+    Index* Index::instance=nullptr;//初始化为空
+    std::mutex Index::_mutex;//定义
 }
