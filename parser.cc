@@ -5,11 +5,14 @@
 #include <utility>
 #include "util.hpp"
 
+
+
 //不建议直接写using namespace std;
+
 
 //读取位置与目的位置
 const std::string src_path="data/input";//读取路径，将其中的html文件读取
-const std::string dst_path="data/raw_html/raw.txt";//将读取到的html内容合并形成一个新的txt文件
+const std::string output="data/raw_html/raw.txt";//将读取到的html内容合并形成一个新的txt文件
 
 //定义一个结构体满足第二步解析形成的结构
 typedef struct DocInfo
@@ -24,7 +27,7 @@ typedef struct DocInfo
 //声明函数：
 bool ReaderSuccess(const std::string& _src_path,std::vector<std::string> *_file_reader);
 bool ParseHtml(const std::vector<std::string>& _file_reader,std::vector<DocInfo_t> *_result);
-bool WriteHtml(const std::vector<DocInfo_t>& _result,const std::string& _dst_path);
+bool WriteHtml(const std::vector<DocInfo_t>& _result,const std::string& output);
 
 int main()
 {
@@ -46,8 +49,8 @@ int main()
         return 2;//返回错误码为2
     }
 
-    //3.将解析的各文件写入到dst_path中，并且以/3为分隔符
-    if(!WriteHtml(result,dst_path))//判断写入是否成功
+    //3.将解析的各文件写入到output中，并且以/3为分隔符
+    if(!WriteHtml(result,output))//判断写入是否成功
     {
         //error：
         std::cerr<<"Write Html error"<<std::endl;
@@ -70,7 +73,7 @@ static bool ParseTitle(const std::string& result,std::string* title)//result,&do
 {
     //提取title本质就是找<title>......</title>中间的内容，利用[)区间找
     //找头
-    size_t begin=result.find("<title>");//size_t find (const string& str, size_t pos = 0) const
+    std::size_t begin=result.find("<title>");//size_t find (const string& str, size_t pos = 0) const
     //检查
     if(begin==std::string::npos)
     {
@@ -79,13 +82,15 @@ static bool ParseTitle(const std::string& result,std::string* title)//result,&do
     begin+=std::string("<title>").size();
 
     //找尾
-    size_t end=result.find("</title>");
+    std::size_t end=result.find("</title>");
     //检查
     if(end==std::string::npos)
     {
         return false;
     }
-
+    //检查
+    if(begin > end)
+        return false;
     *title=result.substr(begin,end-begin);
     return true;
 }
@@ -99,7 +104,7 @@ static bool ParseContent(const std::string& result,std::string* content)
         LABEL_2//>
     };
     enum status s=LABEL_1;
-    for(auto ch:result)
+    for(char ch:result)
     {
         switch(s)
         {
@@ -225,22 +230,22 @@ bool ParseHtml(const std::vector<std::string>& _file_reader,std::vector<DocInfo_
     return true;
 }
 
-bool WriteHtml(const std::vector<DocInfo_t>& _result,const std::string& _dst_path)
+bool WriteHtml(const std::vector<DocInfo_t>& _result,const std::string& output)
 {
 #define SEP '\3'
-    //通过文件写入到_dst_path
-    std::ofstream out(_dst_path,std::ios::out|std::ios::binary);
+    //通过文件写入到output
+    std::ofstream out(output,std::ios::out|std::ios::binary);
     //检查是否打开成功
     if(!out.is_open())
     {
-        std::cerr<<"open "<<_dst_path<<" is failed !"<<std::endl;
+        std::cerr<<"open "<<output<<" is failed !"<<std::endl;
         return false;
     }
     //读取：方式为title\3content\3url \n title\3content\3url
     for(auto& s:_result)
     {
         std::string out_string;
-        out_string+=s.title;
+        out_string=s.title;
         out_string+=SEP;
         out_string+=s.content;
         out_string+=SEP;
@@ -248,7 +253,7 @@ bool WriteHtml(const std::vector<DocInfo_t>& _result,const std::string& _dst_pat
         out_string+='\n';
 
         //写入：
-        out.write(out_string.c_str(),sizeof(out_string));
+        out.write(out_string.c_str(),out_string.size());
     }
 
     //关闭文件
