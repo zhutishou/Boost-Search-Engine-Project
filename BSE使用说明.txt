@@ -28,5 +28,36 @@
   难点：如何实现对一个content、title分词，这里我们使用Jieba分词工具。链接如下：
 https://gitee.com/imboy-tripartite-deps/cppjieba
 https://github.com/yanyiwu/cppjieba
-  
+
+3.编写搜索引擎searcher.hpp和服务器部分server.cc
+  searcher.hpp：我们将用户输入的关键词找到对应的tilte+desc(部分content)+url以json字符串方式返回给用户浏览器上
+  该部分思路清晰即可完成，同时也要学会简单使用jsoncpp内容（对象和接口）
+  server.cc：我们在linux生成对应的服务器（模拟）提供给用户搜索boost库
+
+
+
+
+
+写项目时遇到的问题：
+1.将cppjieba::Jieba JiebaUtil::jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,IDF_PATH,STOP_WORD_PATH)正确语句写成了如下;
+  cppjieba::Jieba jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,IDF_PATH,STOP_WORD_PATH);
+主要原因就是在demo.cpp中写的是：cppjieba::Jieba jieba(DICT_PATH,
+    HMM_PATH,
+    USER_DICT_PATH,
+    IDF_PATH,
+    STOP_WORD_PATH);
+    vector<string> words;
+    string s;
+导致我使用相应的方法时，没看到自己的类名限定，出现无法编译的错误
+因此学会正确使用命名空间、限定域等限制非常重要，不然很难查到错误原因
+2.在parser.cc切分词，要将内容以文件流形式输出到output文件，结果我在函数参数中写_output导致后面我一直无法使用搜索引擎，名称一定要保证统一方便
+
+
+
+
+
+
+
+
+
 
