@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -25,7 +24,8 @@ namespace ns_index
     //倒排索引处理：
     struct InvertedELem
     {
-        int doc_id;//文档ID
+        //InvertedELem():weight(0){}
+        uint64_t doc_id;//文档ID
         std::string word;//文档内容
         int weight;//文档权重
     };
@@ -56,7 +56,7 @@ typedef std::vector<InvertedELem> InvertedList;
                 _mutex.lock();
                 if(instance==nullptr)
                 {
-                    instance=new Index;
+                    instance=new Index();
                 }
                 _mutex.unlock();
             }
@@ -67,7 +67,7 @@ typedef std::vector<InvertedELem> InvertedList;
         //正排:根据doc_id查找排结构体
         DocInfo* GetForwardIndex(uint64_t doc_id)
         {
-            if(doc_id>forward_index.size())
+            if(doc_id>=forward_index.size())
             {
                 std::cerr<<"该文件ID错误"<<std::endl;
                 return nullptr;
@@ -99,6 +99,8 @@ typedef std::vector<InvertedELem> InvertedList;
             }
             //根据title+content+url \n 按行读取内容---getline
             std::string line;
+            //利用一个计数
+            int count=0;
             while(std::getline(in,line))
             {
                 //构建正排索引
@@ -113,7 +115,11 @@ typedef std::vector<InvertedELem> InvertedList;
                 //利用doc构建倒排索引
                 BuildInvertedIndex(*doc);
                 //构建失败
-
+                count++;
+                if(count%50==0)
+                {
+                    std::cout<<"当前建立的索引数量是："<<count<<std::endl;
+                }
             }
             //关闭文件
             in.close();
@@ -128,11 +134,13 @@ typedef std::vector<InvertedELem> InvertedList;
             //1.解析line，将字符串切分
             std::vector<std::string> results;
             const std::string sep="\3";
-            ns_util::StringUtil::CutString(line,&results,sep);
+            ns_util::StringUtil::Split(line,&results,sep);
             //检查：
             if(results.size()!=3)
             {
                 //该line解析失败
+                std::cout<<results.size()<<std::endl;
+                std::cout<<"该line解析失败"<<std::endl;
                 return nullptr;
             }
 
@@ -144,8 +152,7 @@ typedef std::vector<InvertedELem> InvertedList;
             doc.doc_id=forward_index.size();//此时vector中元素个数即为最新插入的id号，下标=id-1
 
             //3.将DocInfo中字符串放入vector<DocInfo>中
-            forward_index.push_back(doc);
-            
+            forward_index.push_back(std::move(doc));
             return &forward_index.back();
         }
         //倒排：
