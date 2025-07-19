@@ -5,10 +5,7 @@
 #include <utility>
 #include "util.hpp"
 
-
-
 //不建议直接写using namespace std;
-
 
 //读取位置与目的位置
 const std::string src_path="data/input";//读取路径，将其中的html文件读取
@@ -21,8 +18,6 @@ typedef struct DocInfo
     std::string content;//定义文件内容
     std::string url;//定义文件url
 }DocInfo_t;
-
-
 
 //声明函数：
 bool ReaderSuccess(const std::string& _src_path,std::vector<std::string> *_file_reader);
@@ -60,12 +55,6 @@ int main()
 
     return 0;
 }
-
-
-
-
-
-
 
 //实现函数：
 
@@ -141,8 +130,6 @@ static bool ParseUrl(const std::string& file_path,std::string* url)
     return true;
 }
 
-
-
 bool ReaderSuccess(const std::string& _src_path,std::vector<std::string> *_file_reader)
 {
     //1.定义一个命名空间来使用path对象
@@ -186,7 +173,6 @@ static void ShowDoc(const DocInfo_t& doc)
     std::cout<<"content: "<<doc.content<<std::endl;
     std::cout<<"url: "<<doc.url<<std::endl;
 }
-
 
 bool ParseHtml(const std::vector<std::string>& _file_reader,std::vector<DocInfo_t>* _result)
 {
