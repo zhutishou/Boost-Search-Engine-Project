@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <mutex>
 #include "util.hpp"
-
+#include "log.hpp"
 
 //该文件用于处理索引相关内容
 namespace ns_index
@@ -118,7 +118,9 @@ typedef std::vector<InvertedELem> InvertedList;
                 count++;
                 if(count%50==0)
                 {
-                    std::cout<<"当前建立的索引数量是："<<count<<std::endl;
+                    //改成日志显示:
+                    //std::cout<<"当前建立的索引数量是："<<count<<std::endl;
+                    LOG(NORMAL, "当前的已经建立的索引文档: " + std::to_string(count));
                 }
             }
             //关闭文件
@@ -204,7 +206,6 @@ typedef std::vector<InvertedELem> InvertedList;
             }
             return true;
         }
-
 
         //当是正排时，利用vector下标就是ID的方便特性，所以数据结构用vector数组
         std::vector<DocInfo> forward_index;
