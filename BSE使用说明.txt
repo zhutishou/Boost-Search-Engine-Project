@@ -34,11 +34,34 @@ https://github.com/yanyiwu/cppjieba
   该部分思路清晰即可完成，同时也要学会简单使用jsoncpp内容（对象和接口）
   server.cc：我们在linux生成对应的服务器（模拟）提供给用户搜索boost库
 
+4.编写http_server.cc
+  即编写服务器，我们直接通过利用cpp-httplib来实现这部分内容，链接如下：
+  https://github.com/yhirose/cpp-httplib
+  这部分使用需要大家自己去学习
+
+5.前端编写，我们可以实现一个简单的前端代码如：1.html(这是自己写的简易前端）然后利用AI工具生成自己需要的前端，如：index.html
+  需要保证关键功能不丢失即可,主要是简单使用html+css+js就行
+
+6.编写日志文件，当我们的项目大体解决问题时，编写一个后端可以打印显示的日志至关重要，即log.hpp文件
+
+
+五.项目总结：
+  该项目我们是在boost库中将其所有的html文件进行拷贝下来，然后将其词进行划分，当用户输入搜索关键词时，我们能给用户显示对应的title+desc(部分content)+url
+实现用户到boost库中访问
+  具体实现:首先我们利用parse.cc文件将所有的html文件分词，将词放到一个.txt文件中
+          其次，我们读取该.txt文件中内容，建立正排和倒排索引（index.html），然后定义一个搜索引擎---searcher.hpp文件，在其中我们将用户输入的关键词也划分，然后建立的索引中找到，返回给前端，在前端我们设置一个按钮（searcher()）该按钮按下调用搜索引擎，返回给浏览器对应的内容（看展示图）
+          最后，我们建立一个运行子啊云服务器上的服务器---http_server.cc文件，设置对应的端口等内容，同时写一个日志文件---log.hpp给后端打印日志情况
+
+
+六.展示与扩展
+  展示部分看：展示.docx
+  扩展： 1.现在我们只是用了boost库中的.html文件，可以试试全站建立索引和查找
+        2.我们在实现过程中是使用了cpp-httplib和cppjieba组件的，可以试试不用组件自己实现
+        3.可以试试能否利用mysql来查找
 
 
 
-
-写项目时遇到的问题：
+七.写项目时遇到的问题
 1.将cppjieba::Jieba JiebaUtil::jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,IDF_PATH,STOP_WORD_PATH)正确语句写成了如下;
   cppjieba::Jieba jieba(DICT_PATH,HMM_PATH,USER_DICT_PATH,IDF_PATH,STOP_WORD_PATH);
 主要原因就是在demo.cpp中写的是：cppjieba::Jieba jieba(DICT_PATH,
@@ -53,11 +76,4 @@ https://github.com/yanyiwu/cppjieba
 2.在parser.cc切分词，要将内容以文件流形式输出到output文件，结果我在函数参数中写_output导致后面我一直无法使用搜索引擎，名称一定要保证统一方便
 
 
-
-
-
-
-
-
-
-
+以上就是该项目的全部内容了，希望对你有所帮助！！！
